@@ -1,21 +1,29 @@
 import React, { useState } from "react";
 
-const numColors: string[] = [
-  "#A0A0A0", // empty revealed
-  "#0000FE",
-  "#017F01",
-  "#FE0000",
-  "#010080",
-  "#810102",
-  "#008080",
-  "#000000",
-  "#808080",
-  "#000000", // mine
-];
-const tileColors: string[] = [
-  "#C0C0C0", // unrevealed
-  "#A0A0A0", // revealed
-];
+interface NumColors {
+  mine: string;
+  nums: string[];
+}
+
+const numColors: NumColors = {
+  mine: "#000000",
+  nums: [
+    "#A0A0A0",
+    "#0000FE",
+    "#017F01",
+    "#FE0000",
+    "#010080",
+    "#810102",
+    "#008080",
+    "#000000",
+    "#808080",
+  ],
+};
+
+const tileColors = {
+  close: "#C0C0C0",
+  open: "#A0A0A0",
+};
 
 interface CellState {
   isOpen: boolean;
@@ -30,8 +38,8 @@ function createInitialCellState(): CellState {
     isOpen: false,
     isBomb: false,
     numBombsAround: -1,
-    tileColor: tileColors[0],
-    numColor: numColors[0],
+    tileColor: tileColors.close,
+    numColor: numColors.nums[0],
   };
 }
 
@@ -53,15 +61,23 @@ const Counter = () => {
 
   return (
     <div>
-      {Array.from({ length: height }, (_, row) => (
-        <div key={`row-${row}`} style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
-          {Array.from({ length: width }, (_, col) => (
+      {cellStates.map((cellsInRow, row) => (
+        <div
+          key={`row-${row}`}
+          style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+        >
+          {cellsInRow.map((cell, col) => (
             <button
-              style={{ backgroundColor: cellStates[row][col].tileColor, width: 25, height: 25 }}
+              style={{
+                backgroundColor: cell.tileColor,
+                width: 25,
+                height: 25,
+              }}
               key={`btn-${row}-${col}`}
               onClick={() => handleClick(row, col)}
-            ><span style={{color: `${cellStates[row][col].numColor}`}}>
-              {cellStates[row][col].isOpen && cellStates[row][col].numBombsAround}
+            >
+              <span style={{ color: `${cell.numColor}` }}>
+                {cell.isOpen && cell.numBombsAround}
               </span>
             </button>
           ))}
