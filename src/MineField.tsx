@@ -127,42 +127,35 @@ const MineField = () => {
       .fill(false)
       .map(() => Array(WIDTH).fill(false));
     let queue: Location[] = [];
-    if (newCellStates[row][col].numBombsAround === 0) {
-      queue.push([row, col]);
-    } else {
-      newCellStates[row][col].isOpen = true;
-    }
-    function pushNewLocations(y: number, x: number): void {
+    function pushNewLocationsAroundZero(y: number, x: number): void {
+      visited[y][x] = true;
+      if (newCellStates[y][x].numBombsAround !== 0) {
+        newCellStates[y][x].isOpen = true;
+        return;
+      }
       for (let r = y - 1; r <= y + 1; r++) {
         for (let c = x - 1; c <= x + 1; c++) {
-          if (
-            isOutOfDomain(r, c) ||
-            visited[r][c] ||
-            newCellStates[r][c].numBombsAround !== 0
-          ) {
+          if (isOutOfDomain(r, c)) {
+            continue;
+          }
+          newCellStates[r][c].isOpen = true;
+          if (visited[r][c] || newCellStates[r][c].numBombsAround !== 0) {
             continue;
           }
           queue.push([r, c]);
         }
       }
     }
+    pushNewLocationsAroundZero(row, col);
     while (queue.length !== 0) {
       let loc = queue.shift();
       const [y, x] = loc!;
-      console.log("check", y, x);
       for (let r = y - 1; r <= y + 1; r++) {
         for (let c = x - 1; c <= x + 1; c++) {
           if (isOutOfDomain(r, c) || visited[r][c]) {
             continue;
           }
-          visited[r][c] = true;
-          if (!newCellStates[r][c].isOpen) {
-            newCellStates[r][c].isOpen = true;
-          }
-          if (newCellStates[r][c].numBombsAround !== 0) {
-            continue;
-          }
-          pushNewLocations(r, c);
+          pushNewLocationsAroundZero(r, c);
         }
       }
     }
@@ -206,7 +199,8 @@ const MineField = () => {
               ) : (
                 <div className="opencell">
                   <span style={{ color: `${cell.numColor}` }}>
-                    {cell.numBombsAround !== 0 && cell.numBombsAround}
+                    {cell.numBombsAround !== 0 &&
+                      (cell.numBombsAround > 0 ? cell.numBombsAround : "#")}
                   </span>
                 </div>
               ),
