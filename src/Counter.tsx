@@ -76,7 +76,12 @@ const Counter = () => {
     }
   }
 
-  function setBombs(row: number, col: number, numOpen: number, newCellStates: CellState[][]): void {
+  function setBombs(
+    row: number,
+    col: number,
+    numOpen: number,
+    newCellStates: CellState[][],
+  ): void {
     const numClose: number = HEIGHT * WIDTH - numOpen;
     let numChecked: number = 0;
     const bombExist: boolean[] = Array(numClose).fill(false);
@@ -101,17 +106,26 @@ const Counter = () => {
     }
   }
 
-  function initializeField(row: number, col: number, numOpen: number, newCellStates: CellState[][]): void {
+  function initializeField(
+    row: number,
+    col: number,
+    numOpen: number,
+    newCellStates: CellState[][],
+  ): void {
     setBombs(row, col, numOpen, newCellStates);
     setNumBombsAround(newCellStates);
   }
 
-  function openPossibleCells(row: number, col: number, newCellStates: CellState[][]): void {
+  function openPossibleCells(
+    row: number,
+    col: number,
+    newCellStates: CellState[][],
+  ): void {
     // width-first search
   }
 
   function handleClick(row: number, col: number): void {
-    let newCellStates = JSON.parse(JSON.stringify(cellStates))
+    let newCellStates = JSON.parse(JSON.stringify(cellStates));
     if (countOpen !== 0) {
       newCellStates[row][col].isOpen = true;
       openPossibleCells(row, col, newCellStates);
