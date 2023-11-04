@@ -196,6 +196,22 @@ const MineField = () => {
     );
   }
 
+  function handleGameClear(): void {
+    setIsGameClear(true);
+    setTimeout(() => {
+      alert("Game Clear!");
+    }, 100);
+  }
+
+  function handleGameOver(cellStates: CellState[][]): void {
+    openAllMines(cellStates);
+    setCellStates(cellStates);
+    setIsGameOver(true);
+    setTimeout(() => {
+      alert("Game Over!");
+    }, 100);
+  }
+
   function handleClick(row: number, col: number): void {
     if (isGameOver || isGameClear) {
       alert("Click the reset button to restart!");
@@ -204,21 +220,13 @@ const MineField = () => {
     let newCellStates = JSON.parse(JSON.stringify(cellStates));
     if (finishInit) {
       if (cellStates[row][col].isBomb) {
-        openAllMines(newCellStates);
-        setCellStates(newCellStates);
-        setIsGameOver(true);
-        setTimeout(() => {
-          alert("Game Over!");
-        }, 100);
+        handleGameOver(newCellStates);
         return;
       }
       openPossibleCells(row, col, newCellStates);
       setCellStates(newCellStates);
       if (countOpen(newCellStates) == HEIGHT * WIDTH - numTotalBombs) {
-        setIsGameClear(true);
-        setTimeout(() => {
-          alert("Game Clear!");
-        }, 100);
+        handleGameClear();
       }
       return;
     }
