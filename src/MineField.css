@@ -21,3 +21,17 @@
   color: #c0c0c0;
   border: 1px solid #ccc;
 }
+
+.countmines {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.reset-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}

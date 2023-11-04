@@ -128,6 +128,7 @@ const MineField = () => {
     let newCellStates = JSON.parse(JSON.stringify(cellStates));
     if (countOpen !== 0) {
       newCellStates[row][col].isOpen = true;
+      setCountOpen(countOpen + 1);
       openPossibleCells(row, col, newCellStates);
       setCellStates(newCellStates);
       return;
@@ -148,26 +149,47 @@ const MineField = () => {
     setCellStates(newCellStates);
   }
 
+  const ReturnMineField = () => {
+    return (
+      <div>
+        {cellStates.map((cellsInRow, row) => (
+          <div className="minefield">
+            {cellsInRow.map((cell, col) =>
+              !cell.isOpen ? (
+                <button
+                  className="closecell"
+                  onClick={() => handleClick(row, col)}
+                ></button>
+              ) : (
+                <div className="opencell">
+                  <span style={{ color: `${cell.numColor}` }}>
+                    {cell.numBombsAround !== 0 && cell.numBombsAround}
+                  </span>
+                </div>
+              ),
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  function handleReset(): void {
+    setCountOpen(0);
+    setCellStates(
+      Array.from({ length: HEIGHT }, (_, row) =>
+        Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
+      ),
+    );
+  }
+
   return (
     <div>
-      {cellStates.map((cellsInRow, row) => (
-        <div className="minefield">
-          {cellsInRow.map((cell, col) =>
-            !cell.isOpen ? (
-              <button
-                className="closecell"
-                onClick={() => handleClick(row, col)}
-              ></button>
-            ) : (
-              <div className="opencell">
-                <span style={{ color: `${cell.numColor}` }}>
-                  {cell.numBombsAround !== 0 && cell.numBombsAround}
-                </span>
-              </div>
-            ),
-          )}
-        </div>
-      ))}
+      <div className="countmines">Remaining Mines: {0}</div>
+      <ReturnMineField />
+      <button className="reset-button" onClick={() => handleReset()}>
+        Reset
+      </button>
     </div>
   );
 };
