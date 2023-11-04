@@ -53,8 +53,8 @@ const Counter = () => {
     return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH;
   }
 
-  function setNumBombsAround(): void {
-    for (const [row, cellsInRow] of cellStates.entries()) {
+  function setNumBombsAround(newCellStates: CellState[][]): void {
+    for (const [row, cellsInRow] of newCellStates.entries()) {
       for (const [col, cellState] of cellsInRow.entries()) {
         if (cellState.isBomb) {
           continue;
@@ -65,7 +65,7 @@ const Counter = () => {
             if (isOutOfDomain(r, c)) {
               continue;
             }
-            if (cellStates[r][c].isBomb) {
+            if (newCellStates[r][c].isBomb) {
               numBombsAround++;
             }
           }
@@ -74,10 +74,9 @@ const Counter = () => {
         cellState.numColor = numColors.nums[numBombsAround];
       }
     }
-    setCellStates(cellStates);
   }
 
-  function setBombs(row: number, col: number, numOpen: number): void {
+  function setBombs(row: number, col: number, numOpen: number, newCellStates: CellState[][]): void {
     const numClose: number = HEIGHT * WIDTH - numOpen;
     let numChecked: number = 0;
     const bombExist: boolean[] = Array(numClose).fill(false);
@@ -88,7 +87,7 @@ const Counter = () => {
     indices.forEach((index) => {
       bombExist[index] = true;
     });
-    for (const cellsInRow of cellStates) {
+    for (const cellsInRow of newCellStates) {
       for (const cellState of cellsInRow) {
         if (cellState.isOpen) {
           continue;
@@ -100,23 +99,23 @@ const Counter = () => {
         numChecked++;
       }
     }
-    setCellStates(cellStates);
   }
 
-  function initializeField(row: number, col: number, numOpen: number): void {
-    setBombs(row, col, numOpen);
-    setNumBombsAround();
+  function initializeField(row: number, col: number, numOpen: number, newCellStates: CellState[][]): void {
+    setBombs(row, col, numOpen, newCellStates);
+    setNumBombsAround(newCellStates);
   }
 
-  function openPossibleCells(row: number, col: number): void {
+  function openPossibleCells(row: number, col: number, newCellStates: CellState[][]): void {
     // width-first search
-    setCellStates(cellStates);
   }
 
   function handleClick(row: number, col: number): void {
+    let newCellStates = JSON.parse(JSON.stringify(cellStates))
     if (countOpen !== 0) {
-      cellStates[row][col].isOpen = true;
-      openPossibleCells(row, col);
+      newCellStates[row][col].isOpen = true;
+      openPossibleCells(row, col, newCellStates);
+      setCellStates(newCellStates);
       return;
     }
 
@@ -127,12 +126,12 @@ const Counter = () => {
           continue;
         }
         numOpen++;
-        cellStates[r][c].isOpen = true;
+        newCellStates[r][c].isOpen = true;
       }
     }
     setCountOpen(countOpen + numOpen);
-    setCellStates(cellStates);
-    initializeField(row, col, numOpen);
+    initializeField(row, col, numOpen, newCellStates);
+    setCellStates(newCellStates);
   }
 
   return (
