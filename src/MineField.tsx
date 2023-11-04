@@ -42,7 +42,7 @@ const MineField = () => {
   const HEIGHT: number = 9;
   const WIDTH: number = 9;
   const numTotalBombs: number = 10;
-  const [countOpen, setCountOpen] = useState(0);
+  const [finishInit, setFinishInit] = useState(false);
   const [cellStates, setCellStates] = useState<Array<CellState[]>>(
     Array.from({ length: HEIGHT }, (_, row) =>
       Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
@@ -121,14 +121,56 @@ const MineField = () => {
     col: number,
     newCellStates: CellState[][],
   ): void {
-    // width-first search
+    // Breadth-first search
+    type Location = [number, number];
+    let visited: boolean[][] = Array(HEIGHT)
+      .fill(false)
+      .map(() => Array(WIDTH).fill(false));
+    let queue: Location[] = [];
+    if (newCellStates[row][col].numBombsAround === 0) {
+      queue.push([row, col]);
+    } else {
+      newCellStates[row][col].isOpen = true;
+    }
+    function pushNewLocations(y: number, x: number): void {
+      for (let r = y - 1; r <= y + 1; r++) {
+        for (let c = x - 1; c <= x + 1; c++) {
+          if (
+            isOutOfDomain(r, c) ||
+            visited[r][c] ||
+            newCellStates[r][c].numBombsAround !== 0
+          ) {
+            continue;
+          }
+          queue.push([r, c]);
+        }
+      }
+    }
+    while (queue.length !== 0) {
+      let loc = queue.shift();
+      const [y, x] = loc!;
+      console.log("check", y, x);
+      for (let r = y - 1; r <= y + 1; r++) {
+        for (let c = x - 1; c <= x + 1; c++) {
+          if (isOutOfDomain(r, c) || visited[r][c]) {
+            continue;
+          }
+          visited[r][c] = true;
+          if (!newCellStates[r][c].isOpen) {
+            newCellStates[r][c].isOpen = true;
+          }
+          if (newCellStates[r][c].numBombsAround !== 0) {
+            continue;
+          }
+          pushNewLocations(r, c);
+        }
+      }
+    }
   }
 
   function handleClick(row: number, col: number): void {
     let newCellStates = JSON.parse(JSON.stringify(cellStates));
-    if (countOpen !== 0) {
-      newCellStates[row][col].isOpen = true;
-      setCountOpen(countOpen + 1);
+    if (finishInit) {
       openPossibleCells(row, col, newCellStates);
       setCellStates(newCellStates);
       return;
@@ -144,9 +186,10 @@ const MineField = () => {
         newCellStates[r][c].isOpen = true;
       }
     }
-    setCountOpen(countOpen + numOpen);
     initializeField(row, col, numOpen, newCellStates);
+    openPossibleCells(row, col, newCellStates);
     setCellStates(newCellStates);
+    setFinishInit(true);
   }
 
   const ReturnMineField = () => {
@@ -175,7 +218,7 @@ const MineField = () => {
   };
 
   function handleReset(): void {
-    setCountOpen(0);
+    setFinishInit(false);
     setCellStates(
       Array.from({ length: HEIGHT }, (_, row) =>
         Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
