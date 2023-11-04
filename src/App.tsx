@@ -1,11 +1,11 @@
 import React from "react";
-import Counter from "./Counter";
+import MineField from "./MineField";
 
 const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <Counter />
+        <MineField />
       </header>
     </div>
   );

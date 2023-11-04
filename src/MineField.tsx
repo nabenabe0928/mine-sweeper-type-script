@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { sampleSize } from "lodash";
-import "./Counter.css";
+import "./MineField.css";
 
 interface NumColors {
   mine: string;
@@ -38,7 +38,7 @@ function createInitialCellState(): CellState {
   };
 }
 
-const Counter = () => {
+const MineField = () => {
   const HEIGHT: number = 9;
   const WIDTH: number = 9;
   const numTotalBombs: number = 10;
@@ -172,4 +172,4 @@ const Counter = () => {
   );
 };
 
-export default Counter;
+export default MineField;
