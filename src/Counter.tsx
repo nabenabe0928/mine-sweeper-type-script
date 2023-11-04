@@ -108,23 +108,31 @@ const Counter = () => {
     setNumBombsAround();
   }
 
+  function openPossibleCells(row: number, col: number): void {
+    // width-first search
+    setCellStates(cellStates);
+  }
+
   function handleClick(row: number, col: number): void {
-    if (countOpen === 0) {
-      let numOpen: number = 0;
-      for (let r = row - 1; r <= row + 1; r++) {
-        for (let c = col - 1; c <= col + 1; c++) {
-          if (isOutOfDomain(r, c)) {
-            continue;
-          }
-          numOpen++;
-          cellStates[r][c].isOpen = true;
-        }
-      }
-      setCountOpen(countOpen + numOpen);
-      setCellStates(cellStates);
-      initializeField(row, col, numOpen);
+    if (countOpen !== 0) {
+      cellStates[row][col].isOpen = true;
+      openPossibleCells(row, col);
       return;
     }
+
+    let numOpen: number = 0;
+    for (let r = row - 1; r <= row + 1; r++) {
+      for (let c = col - 1; c <= col + 1; c++) {
+        if (isOutOfDomain(r, c)) {
+          continue;
+        }
+        numOpen++;
+        cellStates[r][c].isOpen = true;
+      }
+    }
+    setCountOpen(countOpen + numOpen);
+    setCellStates(cellStates);
+    initializeField(row, col, numOpen);
   }
 
   return (
