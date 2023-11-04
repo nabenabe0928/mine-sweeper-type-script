@@ -43,6 +43,8 @@ const MineField = () => {
   const WIDTH: number = 9;
   const numTotalBombs: number = 10;
   const [finishInit, setFinishInit] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [isGameClear, setIsGameClear] = useState(false);
   const [cellStates, setCellStates] = useState<Array<CellState[]>>(
     Array.from({ length: HEIGHT }, (_, row) =>
       Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
@@ -161,11 +163,63 @@ const MineField = () => {
     }
   }
 
+  function openAllMines(newCellStates: CellState[][]): void {
+    for (const cellsInRow of newCellStates) {
+      for (const cellState of cellsInRow) {
+        if (cellState.isBomb) {
+          cellState.isOpen = true;
+        }
+      }
+    }
+  }
+
+  function countOpen(cellStates: CellState[][]): number {
+    let numOpen: number = 0;
+    for (const cellsInRow of cellStates) {
+      for (const cellState of cellsInRow) {
+        if (cellState.isOpen) {
+          numOpen++;
+        }
+      }
+    }
+    return numOpen;
+  }
+
+  function handleReset(): void {
+    setFinishInit(false);
+    setIsGameClear(false);
+    setIsGameOver(false);
+    setCellStates(
+      Array.from({ length: HEIGHT }, (_, row) =>
+        Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
+      ),
+    );
+  }
+
   function handleClick(row: number, col: number): void {
+    if (isGameOver || isGameClear) {
+      alert("Click the reset button to restart!");
+      return;
+    }
     let newCellStates = JSON.parse(JSON.stringify(cellStates));
     if (finishInit) {
+      if (cellStates[row][col].isBomb) {
+        openAllMines(newCellStates);
+        setCellStates(newCellStates);
+        setIsGameOver(true);
+        setTimeout(() => {
+          alert("Game Over!");
+        }, 100);
+        return;
+      }
       openPossibleCells(row, col, newCellStates);
       setCellStates(newCellStates);
+      if (countOpen(newCellStates) == HEIGHT * WIDTH - numTotalBombs) {
+        setIsGameClear(true);
+        setTimeout(() => {
+          alert("Game Clear!");
+        }, 100);
+      }
       return;
     }
 
@@ -210,15 +264,6 @@ const MineField = () => {
       </div>
     );
   };
-
-  function handleReset(): void {
-    setFinishInit(false);
-    setCellStates(
-      Array.from({ length: HEIGHT }, (_, row) =>
-        Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
-      ),
-    );
-  }
 
   return (
     <div>
