@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, MouseEvent } from "react";
 import { sampleSize } from "lodash";
 import "./MineField.css";
 
@@ -45,6 +45,11 @@ const MineField = () => {
   const [finishInit, setFinishInit] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [isGameClear, setIsGameClear] = useState(false);
+  const [flags, setFlags] = useState<Array<boolean[]>>(
+    Array(HEIGHT)
+      .fill(false)
+      .map(() => Array(WIDTH).fill(false)),
+  );
   const [cellStates, setCellStates] = useState<Array<CellState[]>>(
     Array.from({ length: HEIGHT }, (_, row) =>
       Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
@@ -185,10 +190,27 @@ const MineField = () => {
     return numOpen;
   }
 
+  function countFlags(): number {
+    let numFlags: number = 0;
+    for (let row = 0; row < HEIGHT; row++) {
+      for (let col = 0; col < WIDTH; col++) {
+        if (!cellStates[row][col].isOpen && flags[row][col]) {
+          numFlags++;
+        }
+      }
+    }
+    return numFlags;
+  }
+
   function handleReset(): void {
     setFinishInit(false);
     setIsGameClear(false);
     setIsGameOver(false);
+    setFlags(
+      Array(HEIGHT)
+        .fill(false)
+        .map(() => Array(WIDTH).fill(false)),
+    );
     setCellStates(
       Array.from({ length: HEIGHT }, (_, row) =>
         Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
@@ -217,6 +239,10 @@ const MineField = () => {
       alert("Click the reset button to restart!");
       return;
     }
+    if (flags[row][col]) {
+      // Do nothing for flaged cells
+      return;
+    }
     let newCellStates = JSON.parse(JSON.stringify(cellStates));
     if (finishInit) {
       if (cellStates[row][col].isBomb) {
@@ -225,7 +251,7 @@ const MineField = () => {
       }
       openPossibleCells(row, col, newCellStates);
       setCellStates(newCellStates);
-      if (countOpen(newCellStates) == HEIGHT * WIDTH - numTotalBombs) {
+      if (countOpen(newCellStates) === HEIGHT * WIDTH - numTotalBombs) {
         handleGameClear();
       }
       return;
@@ -247,6 +273,14 @@ const MineField = () => {
     setFinishInit(true);
   }
 
+  const handleRightClick =
+    (row: number, col: number) => (event: MouseEvent) => {
+      event.preventDefault();
+      let newFlags = flags.map((flagsInRow) => [...flagsInRow]);
+      newFlags[row][col] = !flags[row][col];
+      setFlags(newFlags);
+    };
+
   const ReturnMineField = () => {
     return (
       <div>
@@ -257,7 +291,10 @@ const MineField = () => {
                 <button
                   className="closecell"
                   onClick={() => handleClick(row, col)}
-                ></button>
+                  onContextMenu={handleRightClick(row, col)}
+                >
+                  <span className="flaged-cell">{flags[row][col] && "P"}</span>
+                </button>
               ) : (
                 <div className="opencell">
                   <span style={{ color: `${cell.numColor}` }}>
@@ -275,7 +312,9 @@ const MineField = () => {
 
   return (
     <div>
-      <div className="countmines">Remaining Mines: {0}</div>
+      <div className="countmines">
+        Remaining Mines: {numTotalBombs - countFlags()}
+      </div>
       <ReturnMineField />
       <button className="reset-button" onClick={() => handleReset()}>
         Reset
