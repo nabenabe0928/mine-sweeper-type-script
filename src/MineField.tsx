@@ -38,10 +38,10 @@ function createInitialCellState(): CellState {
   };
 }
 
-const MineField = () => {
-  const HEIGHT: number = 9;
-  const WIDTH: number = 9;
-  const numTotalBombs: number = 10;
+const MineFieldWithLevel = ({ level }: { level: number }) => {
+  const HEIGHT: number = [9, 16, 16][level];
+  const WIDTH: number = [9, 16, 30][level];
+  const numTotalBombs: number = [10, 40, 100][level];
   const [finishInit, setFinishInit] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [isGameClear, setIsGameClear] = useState(false);
@@ -350,9 +350,38 @@ const MineField = () => {
         Remaining Mines: {numTotalBombs - countFlags()}
       </div>
       <ReturnMineField />
-      <button className="reset-button" onClick={() => handleReset()}>
-        Reset
-      </button>
+      <div className="reset-button-container">
+        <button className="reset-button" onClick={() => handleReset()}>
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const MineField = () => {
+  const [level, setLevel] = useState(0);
+  const handleSelectLevel = (level: number) => {
+    setLevel(level);
+  };
+  return (
+    <div>
+      <MineFieldWithLevel key={level} level={level} />
+      <div className="level-button-container">
+        <button className="level-button" onClick={() => handleSelectLevel(0)}>
+          Easy
+        </button>
+      </div>
+      <div className="level-button-container">
+        <button className="level-button" onClick={() => handleSelectLevel(1)}>
+          Medium
+        </button>
+      </div>
+      <div className="level-button-container">
+        <button className="level-button" onClick={() => handleSelectLevel(2)}>
+          Hard
+        </button>
+      </div>
     </div>
   );
 };
