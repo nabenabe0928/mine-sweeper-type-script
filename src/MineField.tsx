@@ -123,11 +123,32 @@ const MineField = () => {
     setNumBombsAround(newCellStates);
   }
 
+  function handleGameClear(): void {
+    setIsGameClear(true);
+    setTimeout(() => {
+      alert("Game Clear!");
+    }, 100);
+  }
+
+  function handleGameOver(cellStates: CellState[][]): void {
+    openAllMines(cellStates);
+    setCellStates(cellStates);
+    setIsGameOver(true);
+    setTimeout(() => {
+      alert("Game Over!");
+    }, 100);
+  }
+
   function openPossibleCells(
     row: number,
     col: number,
     newCellStates: CellState[][],
   ): void {
+    if (newCellStates[row][col].isBomb) {
+      handleGameOver(newCellStates);
+      return;
+    }
+
     // Breadth-first search
     type Location = [number, number];
     let visited: boolean[][] = Array(HEIGHT)
@@ -165,6 +186,9 @@ const MineField = () => {
           pushNewLocationsAroundZero(r, c);
         }
       }
+    }
+    if (countOpen(newCellStates) === HEIGHT * WIDTH - numTotalBombs) {
+      handleGameClear();
     }
   }
 
@@ -218,22 +242,6 @@ const MineField = () => {
     );
   }
 
-  function handleGameClear(): void {
-    setIsGameClear(true);
-    setTimeout(() => {
-      alert("Game Clear!");
-    }, 100);
-  }
-
-  function handleGameOver(cellStates: CellState[][]): void {
-    openAllMines(cellStates);
-    setCellStates(cellStates);
-    setIsGameOver(true);
-    setTimeout(() => {
-      alert("Game Over!");
-    }, 100);
-  }
-
   function handleClick(row: number, col: number): void {
     if (isGameOver || isGameClear) {
       alert("Click the reset button to restart!");
@@ -245,15 +253,8 @@ const MineField = () => {
     }
     let newCellStates = JSON.parse(JSON.stringify(cellStates));
     if (finishInit) {
-      if (cellStates[row][col].isBomb) {
-        handleGameOver(newCellStates);
-        return;
-      }
       openPossibleCells(row, col, newCellStates);
       setCellStates(newCellStates);
-      if (countOpen(newCellStates) === HEIGHT * WIDTH - numTotalBombs) {
-        handleGameClear();
-      }
       return;
     }
 
@@ -281,6 +282,36 @@ const MineField = () => {
       setFlags(newFlags);
     };
 
+  const handleDoubleClick = (row: number, col: number) => {
+    let numBombsAround: number = cellStates[row][col].numBombsAround;
+    let numFlagsAround: number = 0;
+    for (let r = row - 1; r <= row + 1; r++) {
+      for (let c = col - 1; c <= col + 1; c++) {
+        if (isOutOfDomain(r, c)) {
+          continue;
+        }
+        if (!cellStates[r][c].isOpen && flags[r][c]) {
+          numFlagsAround++;
+        }
+      }
+    }
+    if (numFlagsAround !== numBombsAround) {
+      return;
+    }
+    let newCellStates = JSON.parse(JSON.stringify(cellStates));
+    for (let r = row - 1; r <= row + 1; r++) {
+      for (let c = col - 1; c <= col + 1; c++) {
+        if (isOutOfDomain(r, c)) {
+          continue;
+        }
+        if (!cellStates[r][c].isOpen && !flags[r][c]) {
+          openPossibleCells(r, c, newCellStates);
+        }
+      }
+    }
+    setCellStates(newCellStates);
+  };
+
   const ReturnMineField = () => {
     return (
       <div>
@@ -296,12 +327,15 @@ const MineField = () => {
                   <span className="flaged-cell">{flags[row][col] && "P"}</span>
                 </button>
               ) : (
-                <div className="opencell">
+                <button
+                  className="opencell"
+                  onDoubleClick={() => handleDoubleClick(row, col)}
+                >
                   <span style={{ color: `${cell.numColor}` }}>
                     {cell.numBombsAround !== 0 &&
                       (cell.numBombsAround > 0 ? cell.numBombsAround : "#")}
                   </span>
-                </div>
+                </button>
               ),
             )}
           </div>
