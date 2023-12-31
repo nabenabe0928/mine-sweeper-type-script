@@ -1,4 +1,3 @@
-import React from "react"
 import MineField from "./MineField"
 
 const App = () => {
