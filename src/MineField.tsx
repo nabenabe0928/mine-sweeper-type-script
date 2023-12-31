@@ -1,3 +1,4 @@
+import { Button, Menu, MenuItem } from "@mui/material"
 import { useEffect, useState, MouseEvent } from "react"
 import { sampleSize } from "lodash"
 import "./MineField.css"
@@ -337,7 +338,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
 
   const ReturnMineField = () => {
     return (
-      <div>
+      <>
         {cellStates.map((cellsInRow, row) => (
           <div className="minefield">
             {cellsInRow.map((cell, col) =>
@@ -363,7 +364,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
             )}
           </div>
         ))}
-      </div>
+      </>
     )
   }
 
@@ -384,25 +385,57 @@ const MineFieldWithLevel = (props: { level: number }) => {
 
 const MineField = () => {
   const [level, setLevel] = useState(0)
+  const [difficultyMenuAnchorEl, setDifficultyMenuAnchorEl] =
+    useState<null | HTMLElement>(null)
+
+  useEffect(() => {
+    const handleUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ""
+    }
+    window.addEventListener("beforeunload", handleUnload)
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload)
+    }
+  }, [])
   return (
-    <div>
+    <>
       <MineFieldWithLevel level={level} />
-      <div className="level-button-container">
-        <button className="level-button" onClick={() => setLevel(0)}>
-          Easy
-        </button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          aria-controls="difficulty-menu"
+          aria-haspopup="true"
+          onClick={(e) => {
+            setDifficultyMenuAnchorEl(e.currentTarget)
+          }}
+        >
+          Difficulty Menu
+        </Button>
+        <Menu
+          id="difficulty-menu"
+          anchorEl={difficultyMenuAnchorEl}
+          open={Boolean(difficultyMenuAnchorEl)}
+          onClose={() => setDifficultyMenuAnchorEl(null)}
+        >
+          {["Easy", "Medium", "Hard"].map((difficulty, difficultyIndex) => (
+            <MenuItem
+              onClick={() => {
+                setDifficultyMenuAnchorEl(null)
+                setLevel(difficultyIndex)
+              }}
+            >
+              {difficulty}
+            </MenuItem>
+          ))}
+        </Menu>
       </div>
-      <div className="level-button-container">
-        <button className="level-button" onClick={() => setLevel(1)}>
-          Medium
-        </button>
-      </div>
-      <div className="level-button-container">
-        <button className="level-button" onClick={() => setLevel(2)}>
-          Hard
-        </button>
-      </div>
-    </div>
+    </>
   )
 }
 
