@@ -202,16 +202,16 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     })
   }
 
-  function countOpen(cellStates: CellState[][]): number {
+  const countOpen = (cellStates: CellState[][]): number => {
     let numOpen: number = 0;
-    for (const cellsInRow of cellStates) {
-      for (const cellState of cellsInRow) {
+    cellStates.forEach((cellStatesInRow) => {
+      cellStatesInRow.forEach((cellState) => {
         if (cellState.isOpen) {
-          numOpen++;
+          ++numOpen
         }
-      }
-    }
-    return numOpen;
+      })
+    })
+    return numOpen
   }
 
   function countFlags(): number {
