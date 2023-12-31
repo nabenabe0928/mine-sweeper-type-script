@@ -6,8 +6,5 @@
     "main.77275905.css.map": "/mine-sweeper-type-script/static/css/main.77275905.css.map",
     "main.92582a13.js.map": "/mine-sweeper-type-script/static/js/main.92582a13.js.map"
   },
-  "entrypoints": [
-    "static/css/main.77275905.css",
-    "static/js/main.92582a13.js"
-  ]
+  "entrypoints": ["static/css/main.77275905.css", "static/js/main.92582a13.js"]
 }
