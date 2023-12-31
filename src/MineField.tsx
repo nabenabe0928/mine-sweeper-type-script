@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from "react"
+import { useEffect, useState, MouseEvent } from "react"
 import { sampleSize } from "lodash"
 import "./MineField.css"
 
@@ -157,6 +157,10 @@ const MineFieldWithLevel = (props: { level: number }) => {
       )
     )
   }
+
+  useEffect(() => {
+    handleReset()
+  }, [level])
 
   const isOutOfDomain = (row: number, col: number): boolean => {
     return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH
@@ -380,24 +384,21 @@ const MineFieldWithLevel = (props: { level: number }) => {
 
 const MineField = () => {
   const [level, setLevel] = useState(0)
-  const handleSelectLevel = (level: number) => {
-    setLevel(level)
-  }
   return (
     <div>
       <MineFieldWithLevel level={level} />
       <div className="level-button-container">
-        <button className="level-button" onClick={() => handleSelectLevel(0)}>
+        <button className="level-button" onClick={() => setLevel(0)}>
           Easy
         </button>
       </div>
       <div className="level-button-container">
-        <button className="level-button" onClick={() => handleSelectLevel(1)}>
+        <button className="level-button" onClick={() => setLevel(1)}>
           Medium
         </button>
       </div>
       <div className="level-button-container">
-        <button className="level-button" onClick={() => handleSelectLevel(2)}>
+        <button className="level-button" onClick={() => setLevel(2)}>
           Hard
         </button>
       </div>
