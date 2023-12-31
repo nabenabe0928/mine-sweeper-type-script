@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from "react"
+import { useState, MouseEvent } from "react"
 import { sampleSize } from "lodash"
 import "./MineField.css"
 
@@ -53,14 +53,10 @@ const initializeField = (props: {
     Array.from({ length: props.width }, () => createInitialCellState())
   )
   const setNumBombsAround = () => {
-    for (const [row, cellsInRow] of newCellStates.entries()) {
-      for (const [col, cellState] of cellsInRow.entries()) {
-        if (cellState.isBomb) {
-          continue
-        }
-        let numBombsAround = 0
-        for (let r = row - 1; r <= row + 1; r++) {
-          for (let c = col - 1; c <= col + 1; c++) {
+    const countBombsAround = (row: number, col: number) => {
+      let numBombsAround = 0
+        for (let r = row - 1; r <= row + 1; ++r) {
+          for (let c = col - 1; c <= col + 1; ++c) {
             if (isOutOfDomain(r, c)) {
               continue
             }
@@ -69,10 +65,18 @@ const initializeField = (props: {
             }
           }
         }
+      return numBombsAround
+    }
+    newCellStates.forEach((cellsInRow, row) => {
+      cellsInRow.forEach((cellState, col) => {
+        if (cellState.isBomb) {
+          return
+        }
+        const numBombsAround = countBombsAround(row, col)
         cellState.numBombsAround = numBombsAround
         cellState.numColor = numColors.nums[numBombsAround]
-      }
-    }
+      })
+    })
   }
 
   const setBombs = (numOpen: number) => {
