@@ -1,5 +1,5 @@
-import React from "react";
-import MineField from "./MineField";
+import React from "react"
+import MineField from "./MineField"
 
 const App = () => {
   return (
@@ -8,7 +8,7 @@ const App = () => {
         <MineField />
       </header>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

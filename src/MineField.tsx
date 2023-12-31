@@ -38,13 +38,19 @@ const createInitialCellState = (): CellState => {
   }
 }
 
-const initializeField = (props: { row: number, column: number, height: number, width: number, numTotalBombs: number }): CellState[][] => {
+const initializeField = (props: {
+  row: number
+  column: number
+  height: number
+  width: number
+  numTotalBombs: number
+}): CellState[][] => {
   const isOutOfDomain = (row: number, col: number): boolean => {
     return row < 0 || row >= props.height || col < 0 || col >= props.width
   }
 
   const newCellStates = Array.from({ length: props.height }, (_) =>
-    Array.from({ length: props.width }, (_) => createInitialCellState()),
+    Array.from({ length: props.width }, (_) => createInitialCellState())
   )
   const setNumBombsAround = () => {
     for (const [row, cellsInRow] of newCellStates.entries()) {
@@ -75,7 +81,7 @@ const initializeField = (props: { row: number, column: number, height: number, w
     const bombExist: boolean[] = Array(numClose).fill(false)
     const indices = sampleSize(
       Array.from(Array(numClose).keys()),
-      props.numTotalBombs,
+      props.numTotalBombs
     )
     indices.forEach((index) => {
       bombExist[index] = true
@@ -123,12 +129,12 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
   const [flags, setFlags] = useState<Array<boolean[]>>(
     Array(HEIGHT)
       .fill(false)
-      .map(() => Array(WIDTH).fill(false)),
+      .map(() => Array(WIDTH).fill(false))
   )
   const [cellStates, setCellStates] = useState<Array<CellState[]>>(
     Array.from({ length: HEIGHT }, (_, row) =>
-      Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
-    ),
+      Array.from({ length: WIDTH }, (_, col) => createInitialCellState())
+    )
   )
 
   const isOutOfDomain = (row: number, col: number): boolean => {
@@ -154,7 +160,7 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
   const openPossibleCells = (
     row: number,
     col: number,
-    newCellStates: CellState[][],
+    newCellStates: CellState[][]
   ) => {
     if (newCellStates[row][col].isBomb) {
       handleGameOver(newCellStates)
@@ -226,7 +232,10 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     return numOpen
   }
 
-  const countFlags = (cellStates: CellState[][], flags: boolean[][]): number => {
+  const countFlags = (
+    cellStates: CellState[][],
+    flags: boolean[][]
+  ): number => {
     let numFlags: number = 0
     cellStates.forEach((cellStatesInRow, row) => {
       cellStatesInRow.forEach((cellState, col) => {
@@ -245,12 +254,12 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     setFlags(
       Array(HEIGHT)
         .fill(false)
-        .map(() => Array(WIDTH).fill(false)),
+        .map(() => Array(WIDTH).fill(false))
     )
     setCellStates(
       Array.from({ length: HEIGHT }, (_, row) =>
-        Array.from({ length: WIDTH }, (_, col) => createInitialCellState()),
-      ),
+        Array.from({ length: WIDTH }, (_, col) => createInitialCellState())
+      )
     )
   }
 
@@ -265,7 +274,13 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     }
 
     if (!finishInit) {
-      const newCellStates = initializeField({ row: row, column: col, height: HEIGHT, width: WIDTH, numTotalBombs: numTotalBombs })
+      const newCellStates = initializeField({
+        row: row,
+        column: col,
+        height: HEIGHT,
+        width: WIDTH,
+        numTotalBombs: numTotalBombs,
+      })
       openPossibleCells(row, col, newCellStates)
       setCellStates(newCellStates)
       setFinishInit(true)
@@ -339,7 +354,7 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
                       (cell.numBombsAround > 0 ? cell.numBombsAround : "#")}
                   </span>
                 </button>
-              ),
+              )
             )}
           </div>
         ))}
