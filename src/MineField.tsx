@@ -192,14 +192,14 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     }
   }
 
-  function openAllMines(newCellStates: CellState[][]): void {
-    for (const cellsInRow of newCellStates) {
-      for (const cellState of cellsInRow) {
+  const openAllMines = (newCellStates: CellState[][]): void => {
+    newCellStates.forEach((cellStatesInRow) => {
+      cellStatesInRow.forEach((cellState) => {
         if (cellState.isBomb) {
-          cellState.isOpen = true;
+          cellState.isOpen = true
         }
-      }
-    }
+      })
+    })
   }
 
   function countOpen(cellStates: CellState[][]): number {
