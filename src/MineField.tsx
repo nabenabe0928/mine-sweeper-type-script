@@ -29,7 +29,7 @@ interface CellState {
   numColor: string;
 }
 
-function createInitialCellState(): CellState {
+const createInitialCellState = (): CellState => {
   return {
     isOpen: false,
     isBomb: false,
@@ -56,11 +56,11 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     ),
   );
 
-  function isOutOfDomain(row: number, col: number): boolean {
+  const isOutOfDomain = (row: number, col: number): boolean => {
     return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH;
   }
 
-  function setNumBombsAround(newCellStates: CellState[][]): void {
+  const setNumBombsAround = (newCellStates: CellState[][]) => {
     for (const [row, cellsInRow] of newCellStates.entries()) {
       for (const [col, cellState] of cellsInRow.entries()) {
         if (cellState.isBomb) {
@@ -83,12 +83,12 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     }
   }
 
-  function setBombs(
+  const setBombs = (
     row: number,
     col: number,
     numOpen: number,
     newCellStates: CellState[][],
-  ): void {
+  ) => {
     const numClose: number = HEIGHT * WIDTH - numOpen;
     let numChecked: number = 0;
     const bombExist: boolean[] = Array(numClose).fill(false);
@@ -113,24 +113,24 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     }
   }
 
-  function initializeField(
+  const initializeField = (
     row: number,
     col: number,
     numOpen: number,
     newCellStates: CellState[][],
-  ): void {
+  ) => {
     setBombs(row, col, numOpen, newCellStates);
     setNumBombsAround(newCellStates);
   }
 
-  function handleGameClear(): void {
+  const handleGameClear = () => {
     setIsGameClear(true);
     setTimeout(() => {
       alert("Game Clear!");
     }, 100);
   }
 
-  function handleGameOver(cellStates: CellState[][]): void {
+  const handleGameOver = (cellStates: CellState[][]) => {
     openAllMines(cellStates);
     setCellStates(cellStates);
     setIsGameOver(true);
@@ -139,11 +139,11 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     }, 100);
   }
 
-  function openPossibleCells(
+  const openPossibleCells = (
     row: number,
     col: number,
     newCellStates: CellState[][],
-  ): void {
+  ) => {
     if (newCellStates[row][col].isBomb) {
       handleGameOver(newCellStates);
       return;
@@ -226,7 +226,7 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     return numFlags
   }
 
-  function handleReset(): void {
+  const handleReset = () => {
     setFinishInit(false);
     setIsGameClear(false);
     setIsGameOver(false);
@@ -242,7 +242,7 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     );
   }
 
-  function handleClick(row: number, col: number): void {
+  const handleClick = (row: number, col: number) => {
     if (isGameOver || isGameClear) {
       alert("Click the reset button to restart!");
       return;
