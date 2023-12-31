@@ -119,7 +119,8 @@ const initializeField = (props: {
   return newCellStates
 }
 
-const MineFieldWithLevel = ({ level }: { level: number }) => {
+const MineFieldWithLevel = (props: {level: number}) => {
+  const level = props.level
   const HEIGHT: number = [9, 16, 16][level]
   const WIDTH: number = [9, 16, 30][level]
   const numTotalBombs: number = [10, 40, 100][level]
@@ -303,13 +304,13 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
   const handleDoubleClick = (row: number, col: number) => {
     const numBombsAround: number = cellStates[row][col].numBombsAround
     let numFlagsAround = 0
-    for (let r = row - 1; r <= row + 1; r++) {
-      for (let c = col - 1; c <= col + 1; c++) {
+    for (let r = row - 1; r <= row + 1; ++r) {
+      for (let c = col - 1; c <= col + 1; ++c) {
         if (isOutOfDomain(r, c)) {
           continue
         }
         if (!cellStates[r][c].isOpen && flags[r][c]) {
-          numFlagsAround++
+          ++numFlagsAround
         }
       }
     }
@@ -317,8 +318,8 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
       return
     }
     const newCellStates = JSON.parse(JSON.stringify(cellStates))
-    for (let r = row - 1; r <= row + 1; r++) {
-      for (let c = col - 1; c <= col + 1; c++) {
+    for (let r = row - 1; r <= row + 1; ++r) {
+      for (let c = col - 1; c <= col + 1; ++c) {
         if (isOutOfDomain(r, c)) {
           continue
         }
@@ -384,7 +385,7 @@ const MineField = () => {
   }
   return (
     <div>
-      <MineFieldWithLevel key={level} level={level} />
+      <MineFieldWithLevel level={level} />
       <div className="level-button-container">
         <button className="level-button" onClick={() => handleSelectLevel(0)}>
           Easy
