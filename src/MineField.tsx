@@ -142,6 +142,22 @@ const MineFieldWithLevel = (props: { level: number }) => {
     )
   )
 
+  const handleReset = () => {
+    setFinishInit(false)
+    setIsGameClear(false)
+    setIsGameOver(false)
+    setFlags(
+      Array(HEIGHT)
+        .fill(false)
+        .map(() => Array(WIDTH).fill(false))
+    )
+    setCellStates(
+      Array.from({ length: HEIGHT }, () =>
+        Array.from({ length: WIDTH }, () => createInitialCellState())
+      )
+    )
+  }
+
   const isOutOfDomain = (row: number, col: number): boolean => {
     return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH
   }
@@ -153,9 +169,9 @@ const MineFieldWithLevel = (props: { level: number }) => {
     }, 100)
   }
 
-  const handleGameOver = (cellStates: CellState[][]) => {
-    openAllMines(cellStates)
-    setCellStates(cellStates)
+  const handleGameOver = (newCellStates: CellState[][]) => {
+    openAllMines(newCellStates)
+    setCellStates(newCellStates)
     setIsGameOver(true)
     setTimeout(() => {
       alert("Game Over!")
@@ -178,7 +194,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
       .fill(false)
       .map(() => Array(WIDTH).fill(false))
     const queue: Location[] = []
-    function pushNewLocationsAroundZero(y: number, x: number): void {
+    const pushNewLocationsAroundZero = (y: number, x: number) => {
       visited[y][x] = true
       if (newCellStates[y][x].numBombsAround !== 0) {
         newCellStates[y][x].isOpen = true
@@ -210,12 +226,23 @@ const MineFieldWithLevel = (props: { level: number }) => {
         }
       }
     }
-    if (countOpen(newCellStates) === HEIGHT * WIDTH - numTotalBombs) {
+    const countOpen = (): number => {
+      let numOpen = 0
+      newCellStates.forEach((cellStatesInRow) => {
+        cellStatesInRow.forEach((cellState) => {
+          if (cellState.isOpen) {
+            ++numOpen
+          }
+        })
+      })
+      return numOpen
+    }
+    if (countOpen() === HEIGHT * WIDTH - numTotalBombs) {
       handleGameClear()
     }
   }
 
-  const openAllMines = (newCellStates: CellState[][]): void => {
+  const openAllMines = (newCellStates: CellState[][]) => {
     newCellStates.forEach((cellStatesInRow) => {
       cellStatesInRow.forEach((cellState) => {
         if (cellState.isBomb) {
@@ -225,22 +252,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
     })
   }
 
-  const countOpen = (cellStates: CellState[][]): number => {
-    let numOpen = 0
-    cellStates.forEach((cellStatesInRow) => {
-      cellStatesInRow.forEach((cellState) => {
-        if (cellState.isOpen) {
-          ++numOpen
-        }
-      })
-    })
-    return numOpen
-  }
-
-  const countFlags = (
-    cellStates: CellState[][],
-    flags: boolean[][]
-  ): number => {
+  const countFlags = (): number => {
     let numFlags = 0
     cellStates.forEach((cellStatesInRow, row) => {
       cellStatesInRow.forEach((cellState, col) => {
@@ -250,22 +262,6 @@ const MineFieldWithLevel = (props: { level: number }) => {
       })
     })
     return numFlags
-  }
-
-  const handleReset = () => {
-    setFinishInit(false)
-    setIsGameClear(false)
-    setIsGameOver(false)
-    setFlags(
-      Array(HEIGHT)
-        .fill(false)
-        .map(() => Array(WIDTH).fill(false))
-    )
-    setCellStates(
-      Array.from({ length: HEIGHT }, () =>
-        Array.from({ length: WIDTH }, () => createInitialCellState())
-      )
-    )
   }
 
   const handleClick = (row: number, col: number) => {
@@ -370,7 +366,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
   return (
     <div>
       <div className="countmines">
-        Remaining Mines: {numTotalBombs - countFlags(cellStates, flags)}
+        Remaining Mines: {numTotalBombs - countFlags()}
       </div>
       <ReturnMineField />
       <div className="reset-button-container">
