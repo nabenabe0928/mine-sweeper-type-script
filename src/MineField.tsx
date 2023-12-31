@@ -355,7 +355,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
                   className="opencell"
                   onDoubleClick={() => handleDoubleClick(row, col)}
                 >
-                  <span style={{ color: `${cell.numColor}` }}>
+                  <span style={{ color: `${cell.numColor}`, fontSize: "2em" }}>
                     {cell.numBombsAround !== 0 &&
                       (cell.numBombsAround > 0 ? cell.numBombsAround : "#")}
                   </span>
@@ -399,21 +399,24 @@ const MineField = () => {
     }
   }, [])
   return (
-    <>
-      <MineFieldWithLevel level={level} />
+    <div style={{ display: "flex", overflowX: "auto", width: "100%", alignItems: "center" }}>
       <div
         style={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          width: "300%",
         }}
       >
+        <MineFieldWithLevel level={level} />
         <Button
           aria-controls="difficulty-menu"
           aria-haspopup="true"
           onClick={(e) => {
             setDifficultyMenuAnchorEl(e.currentTarget)
           }}
+          style={{ fontSize: "2em" }}
         >
           Difficulty Menu
         </Button>
@@ -429,13 +432,14 @@ const MineField = () => {
                 setDifficultyMenuAnchorEl(null)
                 setLevel(difficultyIndex)
               }}
+              style={{ fontSize: "2em" }}
             >
               {difficulty}
             </MenuItem>
           ))}
         </Menu>
       </div>
-    </>
+    </div>
   )
 }
 
