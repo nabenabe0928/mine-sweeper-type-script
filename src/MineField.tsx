@@ -214,16 +214,16 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
     return numOpen
   }
 
-  function countFlags(): number {
+  const countFlags = (cellStates: CellState[][]): number => {
     let numFlags: number = 0;
-    for (let row = 0; row < HEIGHT; row++) {
-      for (let col = 0; col < WIDTH; col++) {
-        if (!cellStates[row][col].isOpen && flags[row][col]) {
-          numFlags++;
+    cellStates.forEach((cellStatesInRow, row) => {
+      cellStatesInRow.forEach((cellState, col) => {
+        if (!cellState.isOpen && flags[row][col]) {
+          ++numFlags
         }
-      }
-    }
-    return numFlags;
+      })
+    })
+    return numFlags
   }
 
   function handleReset(): void {
@@ -347,7 +347,7 @@ const MineFieldWithLevel = ({ level }: { level: number }) => {
   return (
     <div>
       <div className="countmines">
-        Remaining Mines: {numTotalBombs - countFlags()}
+        Remaining Mines: {numTotalBombs - countFlags(cellStates)}
       </div>
       <ReturnMineField />
       <div className="reset-button-container">
