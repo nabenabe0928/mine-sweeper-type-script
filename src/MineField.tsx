@@ -23,6 +23,22 @@ const numColors: NumColors = {
   ],
 }
 
+interface MineFieldStyle {
+  cellSize: {
+    width: string
+    height: string
+  }
+  countMineFontSize: {
+    fontSize: string
+  }
+  resetButtonTopMargin: {
+    top: string
+  }
+  generalFontSize: {
+    fontSize: string
+  }
+}
+
 interface CellState {
   isOpen: boolean
   isBomb: boolean
@@ -124,8 +140,11 @@ const initializeField = (props: {
   return newCellStates
 }
 
-const MineFieldWithLevel = (props: { level: number }) => {
-  const level = props.level
+const MineFieldWithLevel = (props: {
+  level: number
+  styles: MineFieldStyle
+}) => {
+  const { level, styles } = props
   const HEIGHT: number = [9, 16, 16][level]
   const WIDTH: number = [9, 16, 30][level]
   const numTotalBombs: number = [10, 40, 100][level]
@@ -345,19 +364,26 @@ const MineFieldWithLevel = (props: { level: number }) => {
               !cell.isOpen ? (
                 <button
                   className="closecell"
+                  style={styles.cellSize}
                   onClick={() => handleClick(row, col)}
                   onContextMenu={handleRightClick(row, col)}
                 >
-                  <span style={{ fontSize: "2em", color: "red" }}>
+                  <span style={{ color: "red", ...styles.generalFontSize }}>
                     {flags[row][col] && "P"}
                   </span>
                 </button>
               ) : (
                 <button
                   className="opencell"
+                  style={styles.cellSize}
                   onDoubleClick={() => handleDoubleClick(row, col)}
                 >
-                  <span style={{ color: `${cell.numColor}`, fontSize: "2em" }}>
+                  <span
+                    style={{
+                      color: `${cell.numColor}`,
+                      ...styles.generalFontSize,
+                    }}
+                  >
                     {cell.numBombsAround !== 0 &&
                       (cell.numBombsAround > 0 ? cell.numBombsAround : "#")}
                   </span>
@@ -372,12 +398,19 @@ const MineFieldWithLevel = (props: { level: number }) => {
 
   return (
     <div>
-      <div className="countmines">
+      <div className="countmines" style={styles.countMineFontSize}>
         Remaining Mines: {numTotalBombs - countFlags()}
       </div>
       <ReturnMineField />
-      <div className="reset-button-container">
-        <button className="reset-button" onClick={() => handleReset()}>
+      <div
+        className="reset-button-container"
+        style={styles.resetButtonTopMargin}
+      >
+        <button
+          className="reset-button"
+          style={styles.generalFontSize}
+          onClick={() => handleReset()}
+        >
           Reset
         </button>
       </div>
@@ -389,6 +422,20 @@ const MineField = () => {
   const [level, setLevel] = useState(0)
   const [difficultyMenuAnchorEl, setDifficultyMenuAnchorEl] =
     useState<null | HTMLElement>(null)
+
+  const styles = {
+    cellSize: {
+      width: "3.5em",
+      height: "3.5em",
+    },
+    countMineFontSize: {
+      fontSize: "3.5em",
+    },
+    resetButtonTopMargin: {
+      top: "0.2em",
+    },
+    generalFontSize: { fontSize: "2em" },
+  }
 
   useEffect(() => {
     const handleUnload = (event: BeforeUnloadEvent) => {
@@ -418,14 +465,14 @@ const MineField = () => {
           width: "300%",
         }}
       >
-        <MineFieldWithLevel level={level} />
+        <MineFieldWithLevel level={level} styles={styles} />
         <Button
           aria-controls="difficulty-menu"
           aria-haspopup="true"
           onClick={(e) => {
             setDifficultyMenuAnchorEl(e.currentTarget)
           }}
-          style={{ fontSize: "2em" }}
+          style={styles.generalFontSize}
         >
           Difficulty Menu
         </Button>
@@ -441,7 +488,7 @@ const MineField = () => {
                 setDifficultyMenuAnchorEl(null)
                 setLevel(difficultyIndex)
               }}
-              style={{ fontSize: "2em" }}
+              style={styles.generalFontSize}
             >
               {difficulty}
             </MenuItem>
