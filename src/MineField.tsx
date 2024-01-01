@@ -33,7 +33,10 @@ interface MineFieldStyle {
   }
   resetButtonTopMargin: {
     top: string
-  }
+  },
+  inCellFontSize: {
+    fontSize: string
+  },
   generalFontSize: {
     fontSize: string
   }
@@ -368,7 +371,7 @@ const MineFieldWithLevel = (props: {
                   onClick={() => handleClick(row, col)}
                   onContextMenu={handleRightClick(row, col)}
                 >
-                  <span style={{ color: "red", ...styles.generalFontSize }}>
+                  <span style={{ color: "red", ...styles.inCellFontSize }}>
                     {flags[row][col] && "P"}
                   </span>
                 </button>
@@ -381,7 +384,7 @@ const MineFieldWithLevel = (props: {
                   <span
                     style={{
                       color: `${cell.numColor}`,
-                      ...styles.generalFontSize,
+                      ...styles.inCellFontSize,
                     }}
                   >
                     {cell.numBombsAround !== 0 &&
@@ -423,18 +426,21 @@ const MineField = () => {
   const [difficultyMenuAnchorEl, setDifficultyMenuAnchorEl] =
     useState<null | HTMLElement>(null)
 
+  const visualWidth = visualViewport?.width ?? 1000
+  const magnificationRatio = visualWidth > 1000 ? 1.0 : Math.max(0.5, visualWidth / 1000)
   const styles = {
     cellSize: {
-      width: "3.5em",
-      height: "3.5em",
+      width: `${3.0 * magnificationRatio}em`,
+      height: `${3.0 * magnificationRatio}em`,
     },
+    inCellFontSize: { fontSize: `${2.0 * magnificationRatio}em` },
     countMineFontSize: {
-      fontSize: "3.5em",
+      fontSize: `${2.5 * magnificationRatio}em`,
     },
     resetButtonTopMargin: {
-      top: "0.2em",
+      top: `${0.2 * magnificationRatio}em`,
     },
-    generalFontSize: { fontSize: "2em" },
+    generalFontSize: { fontSize: `${2 * magnificationRatio}em` },
   }
 
   useEffect(() => {
@@ -462,7 +468,7 @@ const MineField = () => {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          width: "300%",
+          width: "1000%",
         }}
       >
         <MineFieldWithLevel level={level} styles={styles} />
