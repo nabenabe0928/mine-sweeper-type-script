@@ -348,7 +348,7 @@ const MineFieldWithLevel = (props: { level: number }) => {
                   onClick={() => handleClick(row, col)}
                   onContextMenu={handleRightClick(row, col)}
                 >
-                  <span className="flaged-cell" style={{ fontSize: "2em" }}>
+                  <span style={{ fontSize: "2em", color: "red" }}>
                     {flags[row][col] && "P"}
                   </span>
                 </button>
