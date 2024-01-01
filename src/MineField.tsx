@@ -24,9 +24,10 @@ const numColors: NumColors = {
 }
 
 interface MineFieldStyle {
-  cellSize: {
+  cellStyle: {
     width: string
     height: string
+    border: string
   }
   countMineFontSize: {
     fontSize: string
@@ -362,14 +363,15 @@ const MineFieldWithLevel = (props: {
     return (
       <>
         {cellStates.map((cellsInRow, row) => (
-          <div className="minefield">
+          <div className="minefield" key={`cells-in-row-at-${row}`}>
             {cellsInRow.map((cell, col) =>
               !cell.isOpen ? (
                 <button
                   className="closecell"
-                  style={styles.cellSize}
+                  style={styles.cellStyle}
                   onClick={() => handleClick(row, col)}
                   onContextMenu={handleRightClick(row, col)}
+                  key={`cell-at-row${row}-col${col}`}
                 >
                   <span style={{ color: "red", ...styles.inCellFontSize }}>
                     {flags[row][col] && "P"}
@@ -378,8 +380,9 @@ const MineFieldWithLevel = (props: {
               ) : (
                 <button
                   className="opencell"
-                  style={styles.cellSize}
+                  style={styles.cellStyle}
                   onDoubleClick={() => handleDoubleClick(row, col)}
+                  key={`cell-at-row${row}-col${col}`}
                 >
                   <span
                     style={{
@@ -429,9 +432,10 @@ const MineField = () => {
   const visualWidth = visualViewport?.width ?? 1000
   const magnificationRatio = visualWidth > 1000 ? 1.0 : Math.max(0.5, visualWidth / 1000)
   const styles = {
-    cellSize: {
+    cellStyle: {
       width: `${3.0 * magnificationRatio}em`,
       height: `${3.0 * magnificationRatio}em`,
+      border: `${0.1 * magnificationRatio}em solid #ccc`
     },
     inCellFontSize: { fontSize: `${2.0 * magnificationRatio}em` },
     countMineFontSize: {
@@ -495,6 +499,7 @@ const MineField = () => {
                 setLevel(difficultyIndex)
               }}
               style={styles.generalFontSize}
+              key={difficulty}
             >
               {difficulty}
             </MenuItem>

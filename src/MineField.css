@@ -11,13 +11,11 @@
   aspect-ratio: 1/1;
   text-align: center;
   background-color: #c0c0c0;
-  border: 0.1em solid #ccc;
 }
 
 .closecell {
   aspect-ratio: 1/1;
   background-color: #a0a0a0;
-  border: 0.1em solid #ccc;
 }
 
 .countmines {
